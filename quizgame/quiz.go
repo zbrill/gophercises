@@ -18,10 +18,11 @@ type Problem struct {
 func main() {
 	fileName, timerFlag := getArgs()
 	duration := time.Duration(timerFlag) * time.Second
-	timer := time.NewTimer(duration)
 
 	fmt.Print("Press any key to begin the timer...")
 	fmt.Scanln()
+
+	timer := time.NewTimer(duration)
 
 	file := openFile(fileName)
 	problems := parseFile(file)
@@ -29,11 +30,10 @@ func main() {
 	var answer string
 	for _, problem := range problems {
 		result := askQuestion(problem, timer.C, answer)
-		if result == 0 {
-			fmt.Println("You got", rightCount, "out of", len(problems), "questions right!")
-		} else {
-			rightCount += result
+		if result == -1 {
+			break
 		}
+		rightCount += result
 	}
 	fmt.Println("You got", rightCount, "out of", len(problems), "questions right!")
 }
@@ -69,7 +69,8 @@ func parseFile(file *os.File) []Problem {
 func askQuestion(question Problem, t <-chan time.Time, answer string) int {
 	select {
 	case <-t:
-		return 0
+		fmt.Println("You ran out of time!")
+		return -1
 	default:
 		fmt.Println(question.question)
 		fmt.Print("Answer: ")

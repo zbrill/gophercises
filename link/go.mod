@@ -1,4 +1,4 @@
-module github.com/zbrill/gophercises/link
+module link
 
 go 1.22.1
 

@@ -7,5 +7,5 @@ import (
 
 func main() {
 	links := link.Parse("ex4.html")
-	fmt.Println(links)
+	fmt.Println(*links)
 }

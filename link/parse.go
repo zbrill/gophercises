@@ -3,24 +3,19 @@ package link
 import (
 	"bytes"
 	"log"
-	"os"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
 type Link struct {
-	Href string
-	Text string
+	Href string `xml:"loc"`
+	Text string `xml:"text"`
 }
 
-func Parse(fileName string) []Link {
-	file, err := os.ReadFile(fileName)
-	if err != nil {
-		log.Fatal("borked file innit\n", err)
-	}
-	head := parseFile(file)
-	linkNodes := getAllLinkNodes(head)
+func Parse(b []byte) []Link {
+	head := parseFile(b)
+	linkNodes := GetAllLinkNodes(head)
 	var result []Link
 	for _, node := range linkNodes {
 		result = append(result, Link{Href: node.Attr[0].Val, Text: buildText(node)})
@@ -51,13 +46,13 @@ func buildText(n *html.Node) string {
 	return strings.Join(strings.Fields(text), " ")
 }
 
-func getAllLinkNodes(n *html.Node) []*html.Node {
+func GetAllLinkNodes(n *html.Node) []*html.Node {
 	if n.Type == html.ElementNode && n.Data == "a" {
 		return []*html.Node{n}
 	}
 	var nodes []*html.Node
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		nodes = append(nodes, getAllLinkNodes(c)...)
+		nodes = append(nodes, GetAllLinkNodes(c)...)
 	}
 	return nodes
 }

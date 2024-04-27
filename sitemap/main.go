@@ -12,21 +12,6 @@ import (
 	"os"
 )
 
-/**
-buildMap that takes a url and finds all links accessible from that url to a max depth
- - list of links generated for landing url (flag set by user on command line)
- - iterate over list of links and do buildMap on each?
-	- pass depth to this buildMap which returns if depth > depth
-
-can use a map as a set in go. set of all urls makes sure there are no duplicates and acts
-as a check to say 'have i visited this site already'
-
-can i utilize the link package from previous exercises? this package builds a slice of all
-anchors and their corresponding hrefs. problem is, it relies on the presence of a local html
-file and does file parsing vs network fetching. might be worth writing an adapted version of that
-algorithm just for this project.
-**/
-
 var maxDepth int
 var url string
 var baseURL string
@@ -54,7 +39,7 @@ func main() {
 
 func parseFlags() (string, int) {
 	var url = flag.String("url", "https://github.com", "URL for the site to build sitemap from")
-	var depth = flag.Int("depth", 1, "maximum recursive depth")
+	var depth = flag.Int("depth", 4, "maximum recursive depth")
 	flag.Parse()
 	return *url, *depth
 }
@@ -74,7 +59,6 @@ func getHTML(url string) []byte {
 func getURLRoot(urlStr string) string {
 	u, err := urlpkg.Parse(urlStr)
 	if err != nil {
-		// fmt.Println("couldn't parse ", urlStr)
 		return ""
 	}
 	u.Path = ""
